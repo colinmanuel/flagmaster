@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<!-- jquery 1.4 docs - http://demos.jquerymobile.com/1.4.0/icons/ -->
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.0/jquery.mobile-1.4.0.min.css" /> -->
+    <link rel="stylesheet" type="text/css" href="jquery.mobile-1.4.0.css">
+    <link rel="stylesheet" type="text/css" href="css/jquery.mobile.squareui.css" />
+    <script src="js/jquery.min.js"></script>
+    <script src="js/jqm.min.js"></script>
+
+
+
+
+    <style>
+        @media (min-width: 40em) {
+            /* Show the table header rows and set all cells to display: table-cell */
+            .table-breakpoint td,
+            .table-breakpoint th,
+            .table-breakpoint tbody th,
+            .table-breakpoint tbody td,
+            .table-breakpoint thead td,
+            .table-breakpoint thead th {
+                display: table-cell;
+                /* there's something about table-cell display that removes teh pole on wide screens */
+                margin: 0;
+            }
+            /* Hide the labels in each cell */
+            .table-breakpoint td .ui-table-cell-label,
+            .table-breakpoint th .ui-table-cell-label {
+                display: none;
+            }
+        }
+        .nat-archive-msg {
+            height: 50px;
+        }
+        .state-archives-table {
+            display: none;
+        }
+        .nat-flag-gif,
+        .st-flag-gif {
+            height: 300px;
+            padding: 0;
+            /*border-left:3px solid #333;*/
+            border-right: 0px;
+            border-left-width: 8px;
+            -webkit-border-image: -webkit-gradient(linear, 100% 0, 0 0, from(black), to(rgba(0, 0, 0, 0))) 1 100%;
+            -webkit-border-image: -webkit-linear-gradient(right, black, rgba(0, 0, 0, 0)) 1 100%;
+            -o-border-image: -o-linear-gradient(right, black, rgba(0, 0, 0, 0)) 1 100%;
+            -moz-border-image: -moz-linear-gradient(right, black, rgba(0, 0, 0, 0)) 1 100%;
+        }
+        .nat-flag-msg {
+            margin-bottom: 20px;
+        }
+        /* capitalize first letter of state names */
+        .state-label,
+        .state-name {
+            text-transform: capitalize;
+        }
+        .ui-table th,
+        .ui-table td {
+            padding: 0;
+        }
+        .ui-table tr {
+            margin-bottom: 30px;
+        }
+        /* another metal gradient http://jsfiddle.net/siyakunde/Qzdme/38/ */
+        /* declare custom icons */
+        .ui-icon-nationalicon:after {
+            background-image: url("images/icon-national");
+            /* Make your icon fit */
+            background-size: 15px 9px;
+        }
+        .ui-icon-stateicon:after {
+            background-image: url("images/icon-state");
+            /* Make your icon fit */
+            background-size: 15px 9px;
+        }
+        .ui-btn-icon-notext.ui-btn-corner-all,
+        .ui-btn-icon-notext.ui-corner-all,
+        .ui-field-contain,
+        fieldset.ui-field-contain {
+            border: none;
+        }
+        .ui-shadow {
+            -webkit-box-shadow: none;
+            -moz-box-shadow: none;
+            box-shadow: none;
+        }
+        .ui-btn-icon-left:after,
+        .ui-btn-icon-right:after,
+        .ui-btn-icon-top:after,
+        .ui-btn-icon-bottom:after {
+            background: none;
+        }
+        .ui-navbar ul {
+            padding: 15px 5px;
+        }
+    </style>
+
+    <!-- <a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-delete ui-btn-icon-notext ui-btn-right ui-btn-up-undefined">Close</a> -->
+
+
+</head>
+
+<body>
+    <div data-role="page" id="pg-national">
+        <div data-role="header" data-position="fixed" data-theme="e" class="ui-nodisc-icon" data-iconshadow="false">
+            <a href="index.html" data-iconpos="notext" data-role="button" data-icon="home" title="Home">Home</a>
+            <h1>FlagMaster</h1>
+        </div>
+        <div data-role="content" role="main">
+
+            <!-- testing animated CSS3 flag -->
+            <!-- Other flag CSS3 option http://codepen.io/nrose/details/KrnGq -->
+            <!-- http://codepen.io/christopheschwyzer/pen/htvdE -->
+
+            <div class="national-flag block">
+                <!-- <ul class="national-flag-status" data-role="listview" data-inset="true"></ul> -->
+
+                <table data-role="table" id="nat-status-table" class="table-breakpoint" data-mode="reflow">
+
+                    <tbody class="national-flag-status">
+                        <!-- dynamically populate national status -->
+                    </tbody>
+                </table>
+
+
+                <div data-role="collapsible" data-collapsed-icon="flat-time" data-expanded-icon="flat-cross" data-collapsed="true" data-theme="c" class="ui-nodisc-icon" data-iconshadow="false">
+                    <h3>Recent National Half Staffs</h3>
+                    <table data-role="table" id="nat-archives-table" class="table-breakpoint" data-mode="reflow">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Tribute</th>
+                            </tr>
+                        </thead>
+                        <tbody class="national-archives">
+                            <!-- dynamically populate national archives -->
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+
+            <br />
+            <label>Manual Override Switch:</label>
+            <select name="national-switch" id="national-switch" data-theme="a" data-role="slider">
+                <option value="half">Half</option>
+                <option value="full" selected>Full</option>
+            </select>
+        </div>
+        <!-- /content -->
+        <div data-role="footer" data-position="fixed" data-theme="d">
+            <div data-role="navbar">
+                <ul>
+                    <li><a href="index.html" data-theme="a" data-role="button" class="ui-icon-nationalicon">National Flag</a>
+                    </li>
+                    <li><a href="#pg-state" data-theme="a" data-role="button" class="ui-icon-stateicon">State Flag</a>
+                    </li>
+                    <li><a href="#info" data-theme="a" data-rel="popup" data-position-to="window" data-role="button" data-inline="true">Info</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <!-- /footer -->
+        <div id="info" data-role="popup" data-overlay-theme="a" class="ui-content">
+            <a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-delete ui-btn-icon-notext ui-btn-right">Close</a>
+            <p>Merry Christmas, Morgan!</p>
+            <p></p>
+            <p>~ Colin</p>
+        </div>
+    </div>
+    <!-- /page -->
+
+
+    <!-- begin state flag page -->
+    <div data-role="page" id="pg-state">
+        <div data-role="header" data-position="fixed" data-theme="e" class="ui-nodisc-icon" data-iconshadow="false">
+            <a href="index.html" data-iconpos="notext" data-role="button" data-icon="home" title="Home">Home</a>
+            <h1>FlagMaster</h1>
+        </div>
+        <div data-role="content" role="main">
+
+
+
+            <!-- 
+
+Replace "State" in state archives with actual state, add state flag AND make whole thing appear only if a state search has been submitted
+
+Create "No Alerts" message ... needs to be outside of Each statement. If div empty after each statement, replace with "no alerts today"
+
+Load state divs only after national loads
+Add loading icon
+Add animations to appearance of things
+
+
+ -->
+
+            <div data-role="fieldcontain">
+                <select id="states" class="ui-nodisc-icon statesSelect">
+                    <option value="Alabama" data-state="AL">Alabama</option>
+                    <option value="Alaska" data-state="AK">Alaska</option>
+                    <option value="Arizona" data-state="AZ">Arizona</option>
+                    <option value="Arkansas" data-state="AR">Arkansas</option>
+                    <option value="California" data-state="CA">California</option>
+                    <option value="Colorado" data-state="CO">Colorado</option>
+                    <option value="Connecticut" data-state="CT">Connecticut</option>
+                    <option value="Delaware" data-state="DE">Delaware</option>
+                    <option value="District Of Columbia" data-state="DC">District Of Columbia</option>
+                    <option value="Florida" data-state="FL">Florida</option>
+                    <option value="Georgia" data-state="GA">Georgia</option>
+                    <option value="Hawaii" data-state="HI">Hawaii</option>
+                    <option value="Idaho" data-state="ID">Idaho</option>
+                    <option value="Illinois" data-state="IL">Illinois</option>
+                    <option value="Indiana" data-state="IN">Indiana</option>
+                    <option value="Iowa" data-state="IA">Iowa</option>
+                    <option value="Kansas" data-state="KS">Kansas</option>
+                    <option value="Kentucky" data-state="KY">Kentucky</option>
+                    <option value="Louisiana" data-state="LA">Louisiana</option>
+                    <option value="Maine" data-state="ME">Maine</option>
+                    <option value="Maryland" data-state="MD">Maryland</option>
+                    <option value="Massachusetts" data-state="MA">Massachusetts</option>
+                    <option value="Michigan" data-state="MI">Michigan</option>
+                    <option value="Minnesota" data-state="MN">Minnesota</option>
+                    <option value="Mississippi" data-state="MS">Mississippi</option>
+                    <option value="Missouri" data-state="MO">Missouri</option>
+                    <option value="Montana" data-state="MT">Montana</option>
+                    <option value="Nebraska" data-state="NE">Nebraska</option>
+                    <option value="Nevada" data-state="NV">Nevada</option>
+                    <option value="New Hampshire" data-state="NH">New Hampshire</option>
+                    <option value="New Jersey" data-state="NJ">New Jersey</option>
+                    <option value="New Mexico" data-state="NM">New Mexico</option>
+                    <option value="New York" data-state="NY">New York</option>
+                    <option value="North Carolina" data-state="NC">North Carolina</option>
+                    <option value="North Dakota" data-state="ND">North Dakota</option>
+                    <option value="Ohio" data-state="OH">Ohio</option>
+                    <option value="Oklahoma" data-state="OK">Oklahoma</option>
+                    <option value="Oregon" data-state="OR">Oregon</option>
+                    <option value="Pennsylvania" data-state="PA">Pennsylvania</option>
+                    <option value="Rhode Island" data-state="RI">Rhode Island</option>
+                    <option value="South Carolina" data-state="SC">South Carolina</option>
+                    <option value="South Dakota" data-state="SD">South Dakota</option>
+                    <option value="Tennessee" data-state="TN">Tennessee</option>
+                    <option value="Texas" data-state="TX">Texas</option>
+                    <option value="Utah" data-state="UT">Utah</option>
+                    <option value="Vermont" data-state="VT">Vermont</option>
+                    <option value="Virginia" data-state="VA">Virginia</option>
+                    <option value="Washington" data-state="WA">Washington</option>
+                    <option value="West Virginia" data-state="WV">West Virginia</option>
+                    <option value="Wisconsin" data-state="WI">Wisconsin</option>
+                    <option value="Wyoming" data-state="WY">Wyoming</option>
+                </select>
+                <!-- <div class="ui-block-b state-submit">
+ <button type="button" id="submit" data-theme="b" value="submit">Search</button>
+</div> -->
+            </div>
+
+            <!--       <div data-role="fieldcontain">
+        <fieldset data-role="controlgroup">
+          <input type="checkbox" name="checkbox-b" data-theme="b" id="checkbox-b" checked="checked" />
+          <label for="checkbox-b" data-form="ui-btn-up-b">Save my state</label>
+        </fieldset>
+      </div> -->
+
+
+
+            <div data-role="fieldcontain" class="state-flag block">
+
+                <table data-role="table" id="st-status-table" class="table-breakpoint" data-mode="reflow">
+
+                    <tbody class="state-flag-status">
+                        <!-- dynamically populate national status -->
+                    </tbody>
+                </table>
+
+
+                <div class="state-archives-table" data-role="collapsible" data-collapsed-icon="flat-time" data-expanded-icon="flat-cross" data-collapsed="false" data-theme="c" lass="ui-nodisc-icon" data-iconshadow="false">
+                    <h3>Recent <span class="state-name"></span> Half Staffs <span class="img-state-flag"></span></h3>
+                    <table data-role="table" id="st-archives-table" class="table-breakpoint" data-mode="reflow">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Tribute</th>
+                            </tr>
+                        </thead>
+                        <tbody class="state-archives">
+                            <!-- dynamically populate state archives -->
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+
+            <div data-role="footer" data-position="fixed" data-theme="d">
+                <div data-role="navbar">
+                    <ul>
+                        <li><a href="index.html" data-theme="a" data-role="button" class="ui-icon-nationalicon">National Flag</a>
+                        </li>
+                        <li><a href="#pg-state" data-theme="a" data-role="button" class="ui-icon-stateicon">State Flag</a>
+                        </li>
+                        <li><a href="#info" data-theme="a" data-rel="popup" data-position-to="window" data-role="button" data-inline="true">Info</a>
+                        </li>
+                    </ul>
+                </div>
+
+
+            </div>
+            <!-- /footer -->
+            <div id="info" data-role="popup" data-overlay-theme="a" class="ui-content">
+                <a href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-delete ui-btn-icon-notext ui-btn-right">Close</a>
+                <p>Merry Christmas, Morgan!</p>
+                <p></p>
+                <p>~ Colin</p>
+            </div>
+
+        </div>
+    </div>
+
+</body>
+<script>
+    jQuery(document).ready(function ($) {
+
+        var d = new Date();
+        var month = d.getMonth() + 1;
+        var day = d.getDate();
+        /*        var todaysDate = ((''+month).length<2 ? '0' : '') + month + '/' +
+            ((''+day).length<2 ? '0' : '') + day + '/' + d.getFullYear();*/
+        var todaysDate = (('' + month).length < 2 ? '' : '') + month + '/' +
+            (('' + day).length < 2 ? '0' : '') + day + '/' + d.getFullYear();
+        console.log('today date: ' + todaysDate);
+        var alertArray = {}
+        var state = "US";
+
+        // enable testing of half and full staff
+        $("#national-switch").on('slidestop', function (e) {
+            var slider_value = $(this).val();
+            console.log("slider value: " + slider_value);
+            if (slider_value == "full") {
+                console.log('execute as normal');
+                /*        todaysDate = ((''+month).length<2 ? '0' : '') + month + '/' +
+            ((''+day).length<2 ? '0' : '') + day + '/' + d.getFullYear();*/
+                todaysDate = (('' + month).length < 2 ? '' : '') + month + '/' +
+                    (('' + day).length < 2 ? '0' : '') + day + '/' + d.getFullYear();
+                $('.national-archives').html('');
+
+                loadNationalStatus();
+                $('.national-flag-status').append('<tr><td><b>' + 'National Flag at FULL mast' + '</b></td><td class="nat-flag-gif">' + '<img src="images/gif/US.gif" />' + '</td></tr>');
+                //add top: 0% to .nat-flag-gif img 
+                $('.nat-flag-gif img ').css('margin-top', '0%');
+            } else if (slider_value == "half") {
+                console.log('change date to known half staff');
+                todaysDate = "12/7/2013"
+                loadNationalStatus();
+            }
+        });
+
+
+        $("#states").on('change', function () {
+
+            var val = $('.statesSelect option:selected').val().toLowerCase();
+            var selectedState = $('#states option').filter(function () {
+                return this.value.toLowerCase() == val;
+            }).data('state');
+            // need to add conditional for abbreviation
+            fullState = val;
+            state = selectedState ? selectedState : alert('No Match. Try capitalizing first letter of state.');
+            $('.state-archives-table').show();
+            // clear out flags of previous states when submitting again
+            $('.state-flag-status').html('');
+            $('.state-archives').html('');
+            // clear full state name
+            $('.state-name').html('');
+            loadStateStatus();
+        });
+
+
+        // populate national output
+        function loadNationalStatus() {
+            $('.national-flag-status').html('');
+
+            $.ajax({
+                url: "http://pipes.yahoo.com/pipes/pipe.run?_id=9c463727883d93d1d6307fa1882f3177&_render=json&location=US",
+                dataType: 'json',
+                success: function (data) {
+
+                    $.each(data.value.items, function (index, element) {
+                        var str = element.alert
+
+                        var alertLocation = str.replace(/<\/?[^>]+>/gi, '').slice(0, 2);
+
+                        var alertSplit = str.split("<br/>");
+                        var alertDate = alertSplit[0].replace(/<\/?[^>]+>/gi, '').replace(/[^0-9//]/g, '');
+
+                        var msg = str.split("<br/>");
+                        var alertMessage = msg[msg.length - 1].replace(/<\/?[^>]+>/gi, '');
+
+                        // load today's national flag status
+                        if (alertDate == todaysDate) {
+                            $('.national-flag-status').append('<tr><td class="nat-flag-msg">' + alertMessage + '</td><td class="nat-flag-gif">' + '<img src="images/gif/US.gif" />' +
+                                '</td></tr>');
+                            //add top: 10% to .nat-flag-gif img 
+                            $('.nat-flag-gif img ').css('margin-top', '20%');
+                        }
+
+                        // show national no status message if full mast today
+                        /*        if ($('.national-flag-status tbody').length == 0) {
+          $('.national-flag-status').append('<tr><td><b>' + 'National Flag at FULL mast' + '</b></td><td class="nat-flag-gif">' + '<img src="images/gif/US.gif" />' + '</td></tr>');      
+           //add top: 0% to .nat-flag-gif img 
+        $('.nat-flag-gif img ').css('margin-top','0%');
+        }
+        */
+
+
+                        $('.national-archives').append('<tr class="nat-archive-msg"><td><b>' + alertDate + '</b></td><td>' + alertMessage +
+                            '</td></tr><tr><td>&nbsp;</td></tr>');
+
+
+                    });
+
+                }
+            });
+        }
+        loadNationalStatus();
+
+        // begin with flag at full mast? not sure on this one
+        $('.national-flag-status').append('<tr><td><b>' + 'National Flag at FULL mast' + '</b></td><td class="nat-flag-gif">' + '<img src="images/gif/US.gif" />' + '</td></tr>');
+        //add top: 0% to .nat-flag-gif img 
+        $('.nat-flag-gif img ').css('margin-top', '0%');
+
+        // end loadNationalStatus
+
+        // Toggle national flag level based on results
+        // show national no status message if full mast today
+        /*   if ($('.national-flag-status tbody').length == 0) {
+          $('.national-flag-status').append('<tr><td><b>' + 'National Flag at FULL mast' + '</b></td><td class="nat-flag-gif">' + '<img src="images/gif/US.gif" />' + '</td></tr>');      
+           //add top: 0% to .nat-flag-gif img 
+        $('.nat-flag-gif img ').css('margin-top','0%');
+        }*/
+
+        /* // show national half staff message
+        if (alertDate == todaysDate){ 
+          $('.national-flag-status').append('<tr><td>' + alertMessage + '</td><td>' 
+                            + '<img src="images/gif/US.gif" />' + 
+                            '</td></tr>');
+           //add top: 20% to .nat-flag-gif img 
+        $('.nat-flag-gif img ').css('margin-top','20%');
+        } */
+
+
+
+
+        // populate state output
+        function loadStateStatus() {
+            $.ajax({
+                url: "http://pipes.yahoo.com/pipes/pipe.run?_id=9c463727883d93d1d6307fa1882f3177&_render=json&location=" + state,
+                dataType: 'json',
+                success: function (data) {
+                    $.each(data.value.items, function (index, element) {
+                        var str = element.alert
+                        // create alert location
+                        var alertLocation = str.replace(/<\/?[^>]+>/gi, '').slice(0, 2);
+
+                        // create alert date
+                        var alertSplit = str.split("<br/>");
+                        var alertDate = alertSplit[0].replace(/<\/?[^>]+>/gi, '').replace(/[^0-9//]/g, '');
+
+                        // create alert message
+                        var msg = str.split("<br/>");
+                        var alertMessage = msg[msg.length - 1].replace(/<\/?[^>]+>/gi, '');
+
+
+                        // load state status for today
+                        if (alertDate == todaysDate && alertLocation == state) {
+                            $('.state-flag-status').append('<tr><td>' + alertMessage + '</td><td class="st-flag-gif">' + '<img src="images/gif/' + state + '.gif" />' +
+                                '</td></tr>');
+                            //add top: 20% to .nat-flag-gif img 
+                            $('.st-flag-gif img ').css('margin-top', '20%');
+                        }
+
+
+                        // load state archives
+                        if (alertLocation == state) {
+                            $('.state-archives').append('<tr><td><b>' + alertDate + '</b></td><td>' + alertMessage +
+                                '</td></tr><tr><td>&nbsp;</td></tr>');
+                        }
+
+                    });
+                    // show message if no historical data available
+                    if ($('.state-archives tr').length == 0) {
+                        $('.state-archives').append('Historical data not available');
+                    }
+                    // If no state data for today, show full mast
+                    if ($('.state-flag-status tr').length == 0) {
+                        $('.state-flag-status').append('<tr><td><b><span class="state-label">' + fullState + '</span>' + ' Flag at FULL mast' + '</b></td><td class="st-flag-gif">' + '<img src="images/gif/' + state + '.gif" />' + '</td></tr>');
+
+                        $('.state-name').text(fullState)
+                    }
+
+                    /*        if (alertDate == todaysDate && alertLocation == state){ 
+          $('.state-flag-status').append('<tr><td>' + alertMessage + '</td><td>' 
+                            + '<img src="images/gif/' + state + '.gif" />' + 
+                            '</td></tr>');
+           //add top: 20% to .nat-flag-gif img 
+        $('.st-flag-gif img ').css('margin-top','20%');
+        } */
+
+                }
+
+            });
+
+        }
+        // end loadStateStatus
+    });
+</script>
+<script>
+    (function (i, s, o, g, r, a, m) {
+        i['GoogleAnalyticsObject'] = r;
+        i[r] = i[r] || function () {
+            (i[r].q = i[r].q || []).push(arguments)
+        }, i[r].l = 1 * new Date();
+        a = s.createElement(o),
+        m = s.getElementsByTagName(o)[0];
+        a.async = 1;
+        a.src = g;
+        m.parentNode.insertBefore(a, m)
+    })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+
+    ga('create', 'UA-5493761-7', 'colinmanuel.com');
+    ga('send', 'pageview');
+</script>
+
+</html>
