@@ -1,4 +1,0 @@
-FlagMaster
-==========
-
-# Pending...
