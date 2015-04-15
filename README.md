@@ -10,6 +10,13 @@ FlagMaster was created as a gift for my now sister-in-law. When she saw a flag a
 - Select by state to see animated, waiving GIF of your state's flag at either half or full mast
 - Explanation for why the national or state flag is at half mast
 
+### American Flag at Half Mast
+![American Flag at Half Mast](/img/screenshot-fm-national.png "American Flag at Full Mast")
+
+### Texas Flag at Full Mast
+![Texas Flag at Full Mast](/img/screenshot-fm-state.png "Texas Flag at Full Mast")
+
+
 ## Dependencies
 - PhoneGap/Cordova
 - Yahoo Pipes
